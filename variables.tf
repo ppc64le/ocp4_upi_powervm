@@ -257,7 +257,7 @@ variable "installer_log_level" {
 variable "helpernode_repo" {
     description = "Set the repo URL for using ocp4-helpernode"
     # Repo for running ocp4 helpernode setup steps.
-    default = "https://github.com/RedHatOfficial/ocp4-helpernode"
+    default = "git:https://github.com/RedHatOfficial/ocp4-helpernode"
 }
 
 variable "helpernode_tag" {
@@ -269,13 +269,18 @@ variable "helpernode_tag" {
 variable "install_playbook_repo" {
     description = "Set the repo URL for using ocp4-playbooks"
     # Repo for running ocp4 installations steps.
-    default = "https://github.com/ocp-power-automation/ocp4-playbooks"
+    default = "git:https://github.com/ocp-power-automation/ocp4-playbooks"
 }
 
 variable "install_playbook_tag" {
     description = "Set the branch/tag name or commit# for using ocp4-playbooks repo"
     # Checkout level for https://github.com/ocp-power-automation/ocp4-playbooks which is used for running ocp4 installations steps
     default = "10fec74c9e987b39f7af1127abe304a9e41f8e65"
+}
+
+variable "helm_repo" {
+    description = "Set the URL after http_server_repo_main_dir pointing to the Python helm modules"
+    default = "https://get.helm.sh/helm-v3.4.0-linux-ppc64le.tar.gz"
 }
 
 variable "ansible_extra_options" {

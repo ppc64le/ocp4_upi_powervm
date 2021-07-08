@@ -179,12 +179,36 @@ This variable can be used for trying out custom OpenShift install image for deve
 release_image_override     = ""
 ```
 
-These variables specify the ansible playbooks that are used for OpenShift install and post-install customizations.
+These variables specify the ansible playbooks that are used for OpenShift install and post-install customizations. If the URL starts with the tag `git:`, then it is assumed that it points to a GitHub server and git clone and git checkout will be used. URLs without this tag and starting with http:/https: will be interpreted as standard web servers and curl will be used to download the packages.
+`Only .tar.gz, or .tgz are supported formats on web servers and must be contain a complete git clone of the corresponding project!`
+Valid options: Requires a URL pointing to the packages/GitHub project.
 ```
-helpernode_repo            = "https://github.com/RedHatOfficial/ocp4-helpernode"
+helpernode_repo            = "https://<HTTP SERVER>/ocp4-ansible-modules/ocp4-helpernode-latest.tar.gz"
+OR
+helpernode_repo            = "git:https://github.com/RedHatOfficial/ocp4-helpernode"
 helpernode_tag             = "5eab3db53976bb16be582f2edc2de02f7510050d"
-install_playbook_repo      = "https://github.com/ocp-power-automation/ocp4-playbooks"
+
+install_playbook_repo      = "https://<HTTP SERVER>/ocp4-ansible-modules/ocp4-playbooks-latest.tar.gz"
+OR
+install_playbook_repo      = "git:https://github.com/ocp-power-automation/ocp4-playbooks"
 install_playbook_tag       = "02a598faa332aa2c3d53e8edd0e840440ff74bd5"
+helm_repo                  = "https://<HTTP SERVER>/python-modules/helm-latest-linux-ppc64le.tar.gz"
+```
+
+If you want to provide the ansible playbooks by your local HTTP server, follow these steps to clone both git repositories:
+```
+git clone https://github.com/RedHatOfficial/ocp4-helpernode
+tar czvf ocp4-helpernode.tgz ocp4-helpernode
+cp ocp4-helpernode.tgz /var/www/html/repos/
+
+git clone https://github.com/ocp-power-automation/ocp4-playbooks
+tar czvf ocp4-playbooks.tgz ocp4-playbooks
+cp ocp4-playbooks.tgz /var/www/html/repos/
+
+ls -la /var/www/html/repos/
+total 13452
+-rw-r--r--. 1 root root 13624204 Jul  8 13:43 ocp4-helpernode.tgz
+-rw-r--r--. 1 root root   145165 Jul  8 13:44 ocp4-playbooks.tgz
 ```
 
 These variables can be used when debugging ansible playbooks

@@ -58,6 +58,7 @@ variable "ocp_release_tag" {}
 
 variable "helpernode_repo" {}
 variable "helpernode_tag" {}
+variable "helm_repo" {}
 
 variable "ansible_extra_options" {}
 
