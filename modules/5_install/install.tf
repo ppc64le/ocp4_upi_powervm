@@ -73,10 +73,11 @@ locals {
     }
 }
 
-resource "null_resource" "install" {
+resource "null_resource" "prep_playbooks_tools_git" {
     triggers = {
         worker_count    = length(var.worker_ips)
     }
+    count = length(regexall("^git:", var.install_playbook_repo)) > 0 ? 1 : 0
 
     connection {
         type        = "ssh"
@@ -92,10 +93,57 @@ resource "null_resource" "install" {
         inline = [
             "rm -rf ocp4-playbooks",
             "echo 'Cloning into ocp4-playbooks...'",
-            "git clone ${var.install_playbook_repo} --quiet",
+            "git clone ${replace(var.install_playbook_repo, "/^git:/", "")} --quiet",
             "cd ocp4-playbooks && git checkout ${var.install_playbook_tag}"
         ]
     }
+}
+
+resource "null_resource" "prep_playbooks_tools_curl" {
+    triggers = {
+        worker_count    = length(var.worker_ips)
+    }
+    count = length(regexall("^http:|^https:", var.install_playbook_repo)) > 0 ? 1 : 0
+
+    connection {
+        type        = "ssh"
+        user        = var.rhel_username
+        host        = var.bastion_ip[0]
+        private_key = var.private_key
+        agent       = var.ssh_agent
+        timeout     = "${var.connection_timeout}m"
+        bastion_host = var.jump_host
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "rm -rf ocp4-playbooks",
+            "echo 'Downloading ocp4-playbooks...'",
+            "curl -o ocp4-playbooks.tar.gz ${var.install_playbook_repo}",
+            "echo 'Extracting ocp4-playbooks...'",
+            "tar zxvf ocp4-playbooks.tar.gz",
+            "rm ocp4-playbooks.tar.gz",
+            "cd ocp4-playbooks && git checkout ${var.install_playbook_tag}"
+        ]
+    }
+}
+
+resource "null_resource" "install" {
+    depends_on = [null_resource.prep_playbooks_tools_git, null_resource.prep_playbooks_tools_curl]
+    triggers = {
+        worker_count    = length(var.worker_ips)
+    }
+
+    connection {
+        type        = "ssh"
+        user        = var.rhel_username
+        host        = var.bastion_ip[0]
+        private_key = var.private_key
+        agent       = var.ssh_agent
+        timeout     = "${var.connection_timeout}m"
+        bastion_host = var.jump_host
+    }
+
     provisioner "file" {
         content     = templatefile("${path.module}/templates/install_inventory", local.install_inventory)
         destination = "$HOME/ocp4-playbooks/inventory"

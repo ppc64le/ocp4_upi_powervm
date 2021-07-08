@@ -57,10 +57,11 @@ cluster_id                  = ""         # It will use random generated id with 
 #release_image_override     = ""
 
 
-#helpernode_repo            = "https://github.com/RedHatOfficial/ocp4-helpernode"
+#helpernode_repo            = "git:https://github.com/RedHatOfficial/ocp4-helpernode"
 #helpernode_tag             = ""
-#install_playbook_repo      = "https://github.com/ocp-power-automation/ocp4-playbooks"
+#install_playbook_repo      = "git:https://github.com/ocp-power-automation/ocp4-playbooks"
 #install_playbook_tag       = ""
+#helm_repo                 = "https://get.helm.sh/helm-v3.4.0-linux-ppc64le.tar.gz"
 
 #installer_log_level        = "info"
 #ansible_extra_options      = "-v"
